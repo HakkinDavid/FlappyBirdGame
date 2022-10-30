@@ -16,19 +16,29 @@
 #define MAXLENGTH 30 // screen length (max x) in characters
 
 int playerHeight = (MAXHEIGHT/2); // stores the height (y) the player is currently located at
+bool turbo = false;
 
 // array of simultaneous obstacles
 // array size is defined by obstaclesSIZE macro
 // each element has 2 integers [x, y], which are the coordinates of the obstacle
 // integer x defines the distance from origin to the obstacle
 // integer y defines the height the player should pass through in order to not collide (the "aperture")
-int obstaclesXHeight[obstaclesSIZE][2] = {{ 10, 12 }, { 20, 21 }, { 30, 20 }};
+int obstaclesXY[obstaclesSIZE][2] = {{ 10, 12 }, { 20, 21 }, { 30, 20 }};
 
 int points = 0; // points variable
 bool gameOver = false; // whether game has ended or not
 
+// function that standarizes screen cleaning across our code so we can easily change it in the future
+void clean() {
+    printf("\e[1;1H\e[2J"); // <-- this is a hack-ish way to clean screen
+}
+
 // function that renders the game's graphics (text-based)
 void render() {
+    // clear the screen before rendering
+    clean();
+    printf("Puntos: %d\t", points);
+    turbo ? printf("Turbo <ON> [T]\n") : printf("Turbo <off> [T]\n");
     // for loop that iterates to graphicate line by line (from top to bottom)
     for (int y = MAXHEIGHT; y >= 0; y--) {
         // for loop that iterates to graphicate each character of a line (from left to right)
@@ -42,9 +52,9 @@ void render() {
                 // for loop to decide whether an obstacle is present in the current coordinates or not
                 for (int i = 0; i < obstaclesSIZE; i++) {
                     // if current x position is equal to the obstacle's x position
-                    if (x == obstaclesXHeight[i][0]) {
+                    if (x == obstaclesXY[i][0]) {
                         // if height is obstacle's aperture height (y), print empty space
-                        if (y == obstaclesXHeight[i][1]) printf("  ");
+                        if (y == obstaclesXY[i][1]) printf("  ");
                         // else, if height is not obstacle's aperture height, it means the obstacle (or "pipe") is solid at these coordinates [x, y], therefore we print it
                         else printf("⬜");
                     }
@@ -59,74 +69,92 @@ void render() {
     }
 }
 
+// function that calculates obstacle's data
 void obstacles(int index) {
-    if ((index+1) < obstaclesSIZE && obstaclesXHeight[index][1] != 0) {
-        obstaclesXHeight[index][0] = obstaclesXHeight[(index+1)][0];
-        obstaclesXHeight[index][1] = obstaclesXHeight[(index+1)][1];
-    }
-    else {
-        obstaclesXHeight[index][0] = (MAXHEIGHT/2) + (rand() % 2);
-        obstaclesXHeight[index][1] = 1 + (rand() % (MAXHEIGHT/2));
-    }
+    obstaclesXY[index][0] = MAXLENGTH;
+    do {
+        int randomRange = (rand() % 3);
+        if (rand() % 2) randomRange *= -1;
+        obstaclesXY[index][1] += randomRange;
+    } while (obstaclesXY[index][1] > MAXHEIGHT || obstaclesXY[index][1] < 0 || obstaclesXY[index][1] == playerHeight);
 }
 
 void menu() {
-    printf("\e[1;1H\e[2J");
     char menuKey = 0;
     do {
-        printf("P A U S A\nPuntos: %d\n[ESC] Volver\n[Q] Salir", points);
+        clean();
+        printf("P A U S A\nPuntos: %d\n[ESC] Volver\n[Q] Salir\n", points);
         menuKey = _getch();
         if (menuKey == 'q') {
             gameOver = true;
             return;
         }
     } while (menuKey != 27);
+    render();
 }
 
+
 void title() {
-    puts("@@@@@@@@@@@@@@@@@@@@@@@@@@ \n     @@              @@        @@ \n   @@                @@        @@ \n@@@                  @@        @@ \n@@@                  @@        @@                                                                 @@@@@@@@@@@@@@@@@@@@@@@@ \n@@@        @@@@@@@@@@@@        @@  @@-----------------@@--------------@@@@  @@--------------@@@@  @@*          @@        @ \n@@@                  @@        @@@@                   @@                  @@@@                  @@@@*          @@        @ \n@@@                  @@        @@                     @@                    @@                    @@*          @@        @ \n@@@                  @@        @@                     @@                    @@                    @@*          @@        @ \n@@@                  @@        @@          @@         @@          @@        @@          @@        @@*          @@        @ \n@@@ ****** @@@@@@@@@@@@ ****** @@ ******** @@  *****  @@ ******** @@ ****** @@ ******** @@ ****** @@* ******** @@ ****** @ \n@@@ ****** @@@@@@@@@@@@ ****** @@ ******** @@  *****  @@ ******** @@ ****** @@ ******** @@ ****** @@* ****************** @ \n@@@ ****** @@        @@ ****** @@ ******** @@  *****  @@ ******** @@ ****** @@ ******** @@ ****** @@*   **************** @ \n@@@ ****** @@        @@ ****** @@ ******************  @@ ****************** @@ ****************** @@@@@@@ ************** @ \n@@@ ****** @@        @@ ****** @@ ******************  @@ ****************** @@ ****************** @@@ #@@@@ ************ @ \n@@@ ****** @@        @@ ****** @@@@   **************  @@ **************   @@@@ **************   @@@@@    @@@@@@@@ ****** @ \n@@@        @@        @@        @@@@@@                 @@ ********       @@@@@@ ********       @@@@         @@@@@@ ****** @ \n@@@@@@@@@@@@@        @@@@@@@@@@@@    @@@@@@@@@@@@@@@@@@@ ******** @@@@@@    @@ ******** @@@@@@             @@ ********** @ \n                                                      @@ ******** @@        @@ ******** @@                 @@ ******** @@@ \n                                                      @@          @@        @@          @@                 @@        @@@@ \n                                                      @@@@@@@@@@@@@@        @@@@@@@@@@@@@@                 @@@@@@@@@@@@ \n@@@@@@@@@@@@@@@@@@                                               @@@@@@@@@@@@@@ \n@@                @@                                             @@          @@ \n@@                  @@                                           @@          @@ \n@@                    @@                                         @@          @@ \n@                    @@@@@@@@@@@@@@@                            @@          @@ \n@          @@        @@           @@  @@              @@  @@                @@ \n@                    @@           @@@@                @@@@                  @@ \n@                    @@           @@                  @@                    @@ \n@                    @@           @@                  @@                    @@ \n@                    @@           @@          @@@@@@@@@@        @@          @@ \n@ ****************** @@ .*******  @@ ****** @@@@@@@@@@@@ ****** @@ ******** @@ \n@ ******** @@ ****** @@ .*******  @@ ****** @@@@      @@ ****** @@ ******** @@ \n@ ******** @@ ****** @@ .*******  @@ ****** @@        @@ ****** @@ ******** @@ \n@ ****************** @@ .*******  @@ ****** @@        @@ ****************** @@ \n@ ****************** @@ .*******  @@ ****** @@        @@ ****************** @@ \n@ **************   @@@@ .*******  @@ ****** @@        @@@@   ************** @@ \n@                @@@@@@           @@        @@          @@@@                @@ \n@@@@@@@@@@@@@@@@@    @@@@@@@@@@@@@@@@@@@@@@@@@              @@@@@@@@@@@@@@@@@@ \n@");
+    puts("\n  ______ _                           _______        _   ____  _         _ \n |  ____| |                         |__   __|      | | |  _ \\(_)       | |\n | |__  | | __ _ _ __  _ __  _   _     | | _____  _| |_| |_) |_ _ __ __| |\n |  __| | |/ _` | '_ \\| '_ \\| | | |    | |/ _ \\ \\/ / __|  _ <| | '__/ _` |\n | |    | | (_| | |_) | |_) | |_| |    | |  __/>  <| |_| |_) | | | | (_| |\n |_|    |_|\\__,_| .__/| .__/ \\__, |    |_|\\___/_/\\_\\___|____/|_|_|  \\__,_|\n                | |   | |     __/ |                                       \n                |_|   |_|    |___/                                        \n");
+    puts("Controles\n\tSubir [🡡, Espacio, W]\n\tAvanzar [🡢, D]\n\tBajar [🡣, S]\n\tActivar o desactivar turbo [T]\tNota: Pierdes un turno\n\t[ESC] Menú");
     puts("Presiona cualquier tecla para comenzar.");
+    _getch();
 }
 
 int main() {
     title();
     srand(time(NULL));
-    obstacles(0);
+    for (int i = 0; i < obstaclesSIZE; i++) {
+        obstacles(i);
+        obstaclesXY[i][0] /= obstaclesSIZE;
+        obstaclesXY[i][0] *= (i+1);
+    }
+    render();
     while (!gameOver) {
         char keypress = _getch();
         if (keypress == 0) continue;
         switch (keypress) {
             case 27:
                 menu();
+                continue;
                 break;
             case 72:
             case 32:
             case 119:
                 if (playerHeight < MAXHEIGHT) playerHeight++;
+                if (turbo) playerHeight++;
                 break;
+            case 115:
             case 80: 
                 if (playerHeight > 0) playerHeight--;
+                if (turbo) playerHeight--;
+                break;
+            case 77:
+            case 100:
+                break;
+            case 116:
+                turbo = !turbo;
                 break;
             default:
+                continue;
                 break;
         }
-        printf("\e[1;1H\e[2J");
-        render();
         for (int i = 0; i < obstaclesSIZE; i++) {
-            if (obstaclesXHeight[i][0] == 0) {
-                if (obstaclesXHeight[i][1] == playerHeight) {
+            obstaclesXY[i][0]--;
+            if (obstaclesXY[i][0] == 0) {
+                if (obstaclesXY[i][1] == playerHeight) {
                     points++;
                     obstacles(i);
                 }
                 else {
-                    printf("\e[1;1H\e[2J");
+                    clean();
                     puts("GAME OVER");
                     gameOver = true;
                     break;
                 }
             }
-            obstaclesXHeight[i][0]--;
         }
+        if (!gameOver) render();
     }
     printf("Puntos: %d", points);
     return 0;
