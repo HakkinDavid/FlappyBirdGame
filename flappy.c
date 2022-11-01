@@ -102,6 +102,7 @@ void menu() {
 
 // function that renders a nice title screen
 void title() {
+    clean(); // clean screen
     // flappy bird ascii art
     puts("\n  ______ _                           _______        _   ____  _         _ \n |  ____| |                         |__   __|      | | |  _ \\(_)       | |\n | |__  | | __ _ _ __  _ __  _   _     | | _____  _| |_| |_) |_ _ __ __| |\n |  __| | |/ _` | '_ \\| '_ \\| | | |    | |/ _ \\ \\/ / __|  _ <| | '__/ _` |\n | |    | | (_| | |_) | |_) | |_| |    | |  __/>  <| |_| |_) | | | | (_| |\n |_|    |_|\\__,_| .__/| .__/ \\__, |    |_|\\___/_/\\_\\___|____/|_|_|  \\__,_|\n                | |   | |     __/ |                                       \n                |_|   |_|    |___/                                        \n");
     // print controls
@@ -111,8 +112,8 @@ void title() {
     char ch = _getch(); // wait for user to press a key
     // if 0 is pressed, we'll switch emoji usage
     if (ch == '0') {
-        plainText = !plainText;
-        title();
+        plainText = !plainText; // switch emoji usage variable
+        title(); // re run title screen
     }
 }
 
