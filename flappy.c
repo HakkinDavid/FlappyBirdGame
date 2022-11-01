@@ -10,6 +10,7 @@
 #include<time.h> // time library, needed for time function
 #include<conio.h> // non standard library, contains _getch function that doesn't wait for enter key when entering a character
 #include<stdbool.h> // standard library for boolean logic
+#include<locale.h> // localization library
 
 #define obstaclesSIZE 3 // define the number of simultaneous obstacles (or "pipes")
 #define MAXHEIGHT 30 // screen height (max y) in characters
@@ -17,6 +18,7 @@
 
 int playerHeight = (MAXHEIGHT/2); // stores the height (y) the player is currently located at
 bool turbo = false; // whether turbo movement is activated or not
+bool plainText = false;
 
 // array of simultaneous obstacles
 // array size is defined by obstaclesSIZE macro
@@ -30,7 +32,7 @@ bool gameOver = false; // whether game has ended or not
 
 // function that standarizes screen cleaning across our code so we can easily change it in the future
 void clean() {
-    printf("\e[1;1H\e[2J"); // <-- this is a hack-ish way to clean screen
+    printf("\e[1;1H\e[2J"); // <-- this is a hack-ish way to clean screen, using a regular expression to fill the entire screen with blank spaces
 }
 
 // function that renders the game's graphics (text-based)
@@ -47,7 +49,7 @@ void render() {
         for (int x = 0; x < MAXLENGTH; x++) {
             // if we are graphicating coordinates [x, y] where x is 0 and y is the height the player is currently located at
             if (x == 0 && y == playerHeight) {
-                printf("🐦 "); // print our player's character
+                plainText ? printf("P  ") : printf("\U0001F426 "); // print our player's character
             }
             // if not
             else {
@@ -58,7 +60,7 @@ void render() {
                         // if height is obstacle's aperture height (y), print empty space
                         if (y == obstaclesXY[i][1]) printf("  ");
                         // else, if height is not obstacle's aperture height, it means the obstacle (or "pipe") is solid at these coordinates [x, y], therefore we print it
-                        else printf("⬜");
+                        else plainText ? printf("B") : printf("\U00002B1C");
                     }
                     // if not
                     else {
@@ -103,14 +105,20 @@ void title() {
     // flappy bird ascii art
     puts("\n  ______ _                           _______        _   ____  _         _ \n |  ____| |                         |__   __|      | | |  _ \\(_)       | |\n | |__  | | __ _ _ __  _ __  _   _     | | _____  _| |_| |_) |_ _ __ __| |\n |  __| | |/ _` | '_ \\| '_ \\| | | |    | |/ _ \\ \\/ / __|  _ <| | '__/ _` |\n | |    | | (_| | |_) | |_) | |_| |    | |  __/>  <| |_| |_) | | | | (_| |\n |_|    |_|\\__,_| .__/| .__/ \\__, |    |_|\\___/_/\\_\\___|____/|_|_|  \\__,_|\n                | |   | |     __/ |                                       \n                |_|   |_|    |___/                                        \n");
     // print controls
-    puts("Controles\n\tSubir [🡡, Espacio, W]\n\tAvanzar [🡢, D]\n\tBajar [🡣, S]\n\tActivar o desactivar turbo [T]\tNota: Pierdes un turno\n\t[ESC] Menú");
+    printf("Controles\n\tSubir [%s, Espacio, W]\n\tAvanzar [%s, D]\n\tBajar [%s, S]\n\tActivar o desactivar turbo [T]\tNota: Pierdes un turno\n\t[ESC] Menú\n", (plainText ? "Flechita hacia arriba" : "🡡"), (plainText ? "Flechita hacia la derecha" : "🡢"), (plainText ? "Flechita hacia abajo" : "🡣"));
     // let them know how to get started
-    puts("Presiona cualquier tecla para comenzar.");
-    _getch(); // wait for user to press a key
+    puts("Presiona cualquier tecla para comenzar. Si el menú o el juego no se muestran correctamente, presiona 0.");
+    char ch = _getch(); // wait for user to press a key
+    // if 0 is pressed, we'll switch emoji usage
+    if (ch == '0') {
+        plainText = !plainText;
+        title();
+    }
 }
 
 // main game function
 int main() {
+    setlocale(LC_ALL, "es_MX"); // set our locals to mexican spanish
     title(); // render title screen
     srand(time(NULL)); // set random seed based on time
     
