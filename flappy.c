@@ -32,17 +32,18 @@ bool gameOver = false; // whether game has ended or not
 
 // function that standarizes screen cleaning across our code so we can easily change it in the future
 void clean() {
-    printf("\e[1;1H\e[2J"); // <-- this is a hack-ish way to clean screen, using a regular expression to fill the entire screen with blank spaces
+    #ifdef WINDOWS
+        system("cls"); // clear windows console
+    #else
+        printf("\e[1;1H\e[2J"); // <-- this is a hack-ish way to clean screen, using a regular expression to fill the entire screen with blank spaces
+    #endif
 }
 
 // function that renders the game's graphics (text-based)
 void render() {
     // clear the screen before rendering
     clean();
-    // print points
-    printf("Puntos: %d\t", points);
-    // print turbo status
-    turbo ? printf("Turbo <ON> [T]\n") : printf("Turbo <off> [T]\n");
+    
     // for loop that iterates to graphicate line by line (from top to bottom)
     for (int y = MAXHEIGHT; y >= 0; y--) {
         // for loop that iterates to graphicate each character of a line (from left to right)
@@ -71,6 +72,11 @@ void render() {
         }
         printf("\n"); // start new line
     }
+
+    // print points
+    printf("Puntos: %d\t", points);
+    // print turbo status
+    turbo ? printf("Turbo <ON> [T]") : printf("Turbo <off> [T]");
 }
 
 // function that calculates an obstacle's data, based on the provided index
@@ -205,11 +211,16 @@ int main() {
         if (!gameOver) render(); // if game is still going on, render it on screen.
     }
     clean(); // clear screen
-    printf("Puntos: %d", points); // once game ends, print final score
+    printf("Puntos: %d\n", points); // once game ends, print final score
 
     // allow for user to exit nicely
-    puts("Presiona cualquier tecla para salir.");
-    _getch();
+    puts("Presiona ESC para salir.");
+
+    // exit program just until esc key is pressed
+    char exitChar = 0;
+    do {
+        exitChar = _getch();
+    } while (exitChar != 27);
     
     return 0; // exit program without errors
 }
