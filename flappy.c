@@ -206,5 +206,10 @@ int main() {
     }
     clean(); // clear screen
     printf("Puntos: %d", points); // once game ends, print final score
+
+    // allow for user to exit nicely
+    puts("Presiona cualquier tecla para salir.");
+    _getch();
+    
     return 0; // exit program without errors
 }
