@@ -1,6 +1,6 @@
 #ifndef FLAPPY_LIB_H_INCLUDED
 #define FLAPPY_LIB_H_INCLUDED
-#define obstaclesMAXSIZE 5
+#define obstaclesMAXSIZE 5 // maximum supported size for our obstacle's matrix
 
 extern void clean();
 

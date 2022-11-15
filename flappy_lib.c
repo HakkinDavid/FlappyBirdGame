@@ -5,7 +5,7 @@
 #include <stdbool.h> // standard boolean library
 #include <conio.h> // non standard library, contains _getch function that doesn't wait for enter key when entering a character
 
-#define obstaclesMAXSIZE 5
+#define obstaclesMAXSIZE 5 // maximum supported size for our obstacle's matrix
 
 // function that standarizes screen cleaning across our code so we can easily change it in the future
 void clean() {
