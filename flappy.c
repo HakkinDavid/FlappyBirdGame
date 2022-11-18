@@ -10,6 +10,7 @@
 #include <stdbool.h> // standard library for boolean logic
 #include <locale.h> // localization library
 #include "flappy_lib.h" // game's own library
+#include <windows.h> // windows library which allows us to set the console text properties
 
 #define obstaclesSIZE 3 // define the number of simultaneous obstacles (or "pipes")
 #define MAXHEIGHT 30 // screen height (max y) in characters
@@ -32,8 +33,8 @@ bool gameOver = false; // whether game has ended or not
 // main game function
 int main() {
     setlocale(LC_ALL, "es_MX"); // set our locals to mexican spanish
+    SetConsoleOutputCP(65001); // set console output to support emoji
     plainText = title(plainText); // render title screen
-
     
     //the following for loop generates the original obstacles
     for (int i = 0; i < obstaclesSIZE; i++) {

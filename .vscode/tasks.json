@@ -27,10 +27,10 @@
             "args": [
                 "-fdiagnostics-color=always",
                 "-g",
-                "${file}",
+                "${fileDirname}\\flappy.c",
                 "-o",
-                "${fileDirname}\\${fileBasenameNoExtension}.exe",
-                "${fileDirname}\\${fileBasenameNoExtension}_lib.c"
+                "${fileDirname}\\flappy.exe",
+                "${fileDirname}\\flappy_lib.c"
             ],
             "options": {
                 "cwd": "${fileDirname}"
