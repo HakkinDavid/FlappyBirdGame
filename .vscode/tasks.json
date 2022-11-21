@@ -30,7 +30,8 @@
                 "${fileDirname}\\flappy.c",
                 "-o",
                 "${fileDirname}\\flappy.exe",
-                "${fileDirname}\\flappy_lib.c"
+                "${fileDirname}\\flappy_lib.c",
+                "${fileDirname}\\icon.res"
             ],
             "options": {
                 "cwd": "${fileDirname}"
