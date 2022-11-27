@@ -64,7 +64,7 @@ int main() {
                 // as long as player hasn't reached the top of screen
                 if (playerHeight < MAXHEIGHT) {
                     playerHeight++; // move up by 1
-                    if (turbo) playerHeight++; // if turbo, move up once again
+                    if (turbo && playerHeight < MAXHEIGHT) playerHeight++; // if turbo, move up once again
                 }
                 break;
 
@@ -74,7 +74,7 @@ int main() {
                 // as long as player hasn't reached the bottom of screen
                 if (playerHeight > 0) {
                     playerHeight--; // move down by 1
-                    if (turbo) playerHeight--; // if turbo, move down once again
+                    if (turbo && playerHeight > 0) playerHeight--; // if turbo, move down once again
                 }
                 break;
 
